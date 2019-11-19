@@ -3,7 +3,7 @@
 @Author: TJUZQC
 @since: 2019-11-07 16:47:24
 @LastAuthor: TJUZQC
-@lastTime: 2019-11-17 15:14:12
+@lastTime: 2019-11-19 13:31:46
 @Description: None
 @FilePath: \ANN\Activations.py
 '''
@@ -49,18 +49,6 @@ def tanh(x):
 
 def tanh_deriv(x):
     return 1.0 - x ** 2
-
-# 逻辑函数
-
-
-def logistics(x):
-    return 1 / (1+np.exp(-x))
-
-# 逻辑函数的微分
-
-
-def logistics_deriv(x):
-    return x*(1-x)
 
 
 def linear(x):

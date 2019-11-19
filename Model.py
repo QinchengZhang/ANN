@@ -3,7 +3,7 @@
 @Author: TJUZQC
 @Date: 2019-11-12 15:40:52
 @LastAuthor: TJUZQC
-@lastTime: 2019-11-19 11:22:13
+@lastTime: 2019-11-19 13:37:45
 @Description: None
 @FilePath: \ANN\Model.py
 '''
@@ -28,7 +28,7 @@ class BPNN():
         '''
         self.activation_hidden, self.activation_hidden_deriv = self.init_activation(
             activation_hidden)
-            self.activation_out, self.activation_out_deriv = self.init_activation(
+        self.activation_out, self.activation_out_deriv = self.init_activation(
             activation_out)
         self.weights = self.init_weights(layers)
         self.bias = self.init_bias(layers)
@@ -43,20 +43,20 @@ class BPNN():
         @param activation: 激活函数名,不区分大小写 
         @return: 激活函数, 激活函数的导函数
         '''
+        activations = ['sigmoid', 'relu', 'tanh', 'linear', 'selu']
         if activation.lower() == 'sigmoid':
             return Activations.sigmoid, Activations.sigmoid_deriv
         elif activation.lower() == 'relu':
             return Activations.ReLU, Activations.ReLU_deriv
         elif activation.lower() == 'tanh':
             return Activations.tanh, Activations.tanh_deriv
-        elif activation.lower() == 'logistics':
-            return Activations.logistics, Activations.logistics_deriv
         elif activation.lower() == 'linear':
             return Activations.linear, Activations.linear_deriv
         elif activation.lower() == 'selu':
             return Activations.SeLU, Activations.SeLU_deriv
         else:
-            raise ValueError('this activate function does not supoorted')
+            raise ValueError(
+                'this activate function does not supoorted, now supported activations are {}'.format(activations))
 
     def init_weights(self, layers):
         '''
@@ -66,7 +66,7 @@ class BPNN():
         '''
         weights = []
         for i in range(1, len(layers)):
-            weights.append(np.random.normal(0,0.25,(layers[i-1], layers[i])))
+            weights.append(np.random.normal(0, 0.25, (layers[i-1], layers[i])))
         return weights
 
     def init_bias(self, layers):
@@ -77,7 +77,7 @@ class BPNN():
         '''
         bias = []
         for i in range(1, len(layers)):
-            bias.append(np.random.normal(0,0.25,(1, layers[i])))
+            bias.append(np.random.normal(0, 0.25, (1, layers[i])))
         return bias
 
     def forward_propagation(self, x):
@@ -89,11 +89,12 @@ class BPNN():
         self.layers_in = [np.array([x])]
         self.layers_out = [self.layers_in[-1]]
         for i in range(len(self.weights)-1):
-            self.layers_in.append(np.array(np.dot(self.layers_out[-1], self.weights[i]) + self.bias[i]))
-            self.layers_out.append(self.activation(self.layers_in[-1]))
+            self.layers_in.append(
+                np.array(np.dot(self.layers_out[-1], self.weights[i]) + self.bias[i]))
+            self.layers_out.append(self.activation_hidden(self.layers_in[-1]))
         self.layers_in.append(
             np.array(np.dot(self.layers_out[-1], self.weights[-1]) + self.bias[-1]))
-        self.layers_out.append(Activations.linear(self.layers_in[-1]))
+        self.layers_out.append(self.activation_out(self.layers_in[-1]))
         return self.layers_out[-1][0][0]
 
     def back_propagation(self, actual_label):
@@ -102,14 +103,15 @@ class BPNN():
         @param actual_label: 真实值标签
         @return: 精确度, 损失
         '''
-        self.deltas = [np.dot(Activations.linear_deriv(self.layers_out[-1]),
+        self.deltas = [np.dot(self.activation_out_deriv(self.layers_out[-1]),
                               -(actual_label - self.layers_out[-1]))]
         for i in range(len(self.weights) - 1, 0, -1):
-            self.deltas.append(np.dot(np.diag(self.activation_deriv(self.layers_out[i])[
+            self.deltas.append(np.dot(np.diag(self.activation_hidden_deriv(self.layers_out[i])[
                                0]), np.dot(self.weights[i], self.deltas[-1])))
         self.deltas.reverse()
         loss = self.cal_loss(actual_label[0], self.layers_out[-1][0][0])
-        accuracy = self.cal_accuracy(actual_label[0], self.layers_out[-1][0][0])
+        accuracy = self.cal_accuracy(
+            actual_label[0], self.layers_out[-1][0][0])
         return accuracy, loss
 
     def update_parameters(self):
@@ -163,7 +165,7 @@ class BPNN():
         @return: 无
         '''
         parameters = np.array([self.weights, self.bias])
-        if filename.splite('.')[-1] == 'npy':
+        if filename.split('.')[-1] == 'npy':
             np.save(filename, parameters)
         else:
             np.save('{}.npy'.format(filename), parameters)
@@ -210,6 +212,6 @@ class BPNN():
         '''
         correct_count = 0
         for i in range(len(actual_label)):
-            if actual_label[i] == predicted_label[i]:
+            if actual_label[i] == output[i]:
                 correct_count += 1
         return correct_count / float(len(actual_label)) * 100.0

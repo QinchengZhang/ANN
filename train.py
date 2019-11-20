@@ -3,7 +3,7 @@
 @Author: TJUZQC
 @Date: 2019-11-19 10:51:38
 @LastAuthor: TJUZQC
-@lastTime: 2019-11-19 13:38:02
+@lastTime: 2019-11-20 23:39:30
 @Description: None
 @FilePath: \ANN\train.py
 '''
@@ -29,7 +29,9 @@ test_x = np.array(x[0:-1])
 test_y = np.array(y[0:-1])
 model = BPNN([1, 10, 10, 1], activation_hidden='tanh', activation_out='linear')
 # model.load_weights('BPNN.npy')
-model.fit(train_x, train_y, epochs=4000, learning_rate=0.3)
+losses = model.fit(train_x, train_y, epochs=4000, learning_rate=0.3)
+plt.plot(losses)
+plt.show()
 model.save_weights('BPNN.npy')
 y_pred = model.predict(test_x)
 plt.scatter(test_x, test_y, label='GT')

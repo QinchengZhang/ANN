@@ -3,7 +3,7 @@
 @Author: TJUZQC
 @Date: 2019-11-12 15:40:52
 @LastAuthor: TJUZQC
-@lastTime: 2019-11-19 13:37:45
+@lastTime: 2019-11-20 23:38:42
 @Description: None
 @FilePath: \ANN\Model.py
 '''
@@ -136,6 +136,7 @@ class BPNN():
         '''
         self.learning_rate = learning_rate
         pbar = tqdm(range(epochs))
+        losses = []
         for epoch in pbar:
             outputs = []
             i = np.random.randint(train_data.shape[0])
@@ -145,6 +146,8 @@ class BPNN():
                 'epoch {}: acc:{:.3f}, loss:{:.3f}'.format(epoch+1, accuracy, loss))
             self.update_parameters()
             time.sleep(0.001)
+            losses.append(loss)
+        return losses
 
     def predict(self, test_data):
         '''
@@ -192,7 +195,7 @@ class BPNN():
         @param output: 前向传播得到的输出y`
         @return: 精确度
         '''
-        return 1.0 - abs(abs(output - actual_label)/actual_label)
+        return 1.0 - abs(output - actual_label)/actual_label
 
     def cal_loss(self, actual_label, output):
         '''

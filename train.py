@@ -3,38 +3,54 @@
 @Author: TJUZQC
 @Date: 2019-11-19 10:51:38
 @LastAuthor: TJUZQC
-@lastTime: 2019-11-22 10:10:16
+@lastTime: 2019-11-22 16:48:14
 @Description: None
 @FilePath: \ANN\train.py
 '''
 import numpy as np
 from Model import BPNN
 from matplotlib import pyplot as plt
+import time
+
+log = open('results.log', 'a+')
 
 
 def genrate_actual_label(x):
     noise = np.random.normal(0, 0.05, x.shape)
-    return np.sin(2 * x) + np.cos(x) + noise
+    return np.sin(2 * x) + np.cos(3 * x) + noise
 
 
-x = np.linspace(-np.pi, 2 * np.pi, 600)
+sample_domain = (-np.pi, 2 * np.pi)
+sample_num = 1000
+x = np.linspace(sample_domain[0], sample_domain[1], sample_num)
 x = np.transpose([x])
 y = genrate_actual_label(x)
 train_x = np.array(x[0:-1])
 train_y = np.array(y[0:-1])
-x = np.linspace(-np.pi, 2 * np.pi, 600)
+x = np.linspace(sample_domain[0], sample_domain[1], sample_num)
 x = np.transpose([x])
 y = genrate_actual_label(x)
 test_x = np.array(x[0:-1])
 test_y = np.array(y[0:-1])
-model = BPNN([1, 20, 20, 20, 1], activation_hidden='tanh', activation_out='linear')
+network_structure = [1, 20, 30, 20, 1]
+model = BPNN(network_structure, activation_hidden='tanh',
+             activation_out='linear')
 # model.load_weights('BPNN.npy')
-losses = model.fit(train_x, train_y, epochs=9999, learning_rate=0.025)
+epochs = 90000
+learning_rate = 0.025
+losses = model.fit(train_x, train_y, epochs=epochs,
+                   learning_rate=learning_rate)
 plt.plot(losses)
 plt.show()
-model.save_weights('BPNN.npy')
+npy_filename = 'net-{}.npy'.format(time.time())
+model.save_weights(npy_filename)
 y_pred = model.predict(test_x)
 plt.scatter(test_x, test_y, label='GT')
 plt.plot(test_x, y_pred, color='red', label='predict')
 plt.legend()
+fig_filename = 'fig-{}.jpg'.format(time.time())
+plt.savefig(fig_filename)
+log.write('function is : y = np.sin(2 * x) + np.cos(3 * x), sample domain: {domain}, sample num : {sample}, network structure is {net_struct}, epochs is {epochs}, npy_filename is {npy_filename}, fig_filename is {fig_filename}\n'.format(
+    domain=sample_domain, sample=sample_num, net_struct=network_structure, epochs=epochs, npy_filename=npy_filename, fig_filename=fig_filename))
+log.close()
 plt.show()

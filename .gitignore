@@ -5,3 +5,5 @@ figures/fig-1574421087.0028431.jpg
 figures/fig-1574421252.0304875.jpg
 h5files/net-1574421084.5671961.h5
 h5files/net-1574421251.6476939.h5
+[1,20,20,20,1],sin2x+cosx.npy
+hdf5_test.py

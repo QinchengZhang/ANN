@@ -1,5 +1,7 @@
 BPNN.npy
 results.log
-net-1574412431.3632529.npy
-fig-1574412433.7629027.jpg
 .gitignore
+figures/fig-1574421087.0028431.jpg
+figures/fig-1574421252.0304875.jpg
+h5files/net-1574421084.5671961.h5
+h5files/net-1574421251.6476939.h5

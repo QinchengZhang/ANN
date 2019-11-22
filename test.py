@@ -3,14 +3,13 @@
 @Author: TJUZQC
 @Date: 2019-11-19 10:51:38
 @LastAuthor: TJUZQC
-@lastTime: 2019-11-22 15:56:41
+@lastTime: 2019-11-22 18:06:00
 @Description: None
 @FilePath: \ANN\train.py
 '''
 import numpy as np
 from Model import BPNN, BPNN_BGD
 from matplotlib import pyplot as plt
-
 
 def genrate_actual_label(x):
     noise = np.random.normal(0, 0.05, x.shape)

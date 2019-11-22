@@ -3,7 +3,7 @@
 @Author: TJUZQC
 @Date: 2019-11-12 15:40:52
 @LastAuthor: TJUZQC
-@lastTime: 2019-11-22 15:34:38
+@lastTime: 2019-11-22 19:16:37
 @Description: None
 @FilePath: \ANN\Model.py
 '''
@@ -13,6 +13,7 @@ from tqdm import tqdm
 import time
 from matplotlib import pyplot as plt
 import random
+import h5py
 
 np.set_printoptions(precision=6)
 
@@ -26,6 +27,9 @@ class BPNN():
         @param activation_out: 输出层的激活函数,不区分大小写,默认为linear
         @return: 无
         '''
+        self.structure = layers
+        self.act_hidden_name = activation_hidden
+        self.act_out_name = activation_out
         self.activation_hidden, self.activation_hidden_deriv = self.init_activation(
             activation_hidden)
         self.activation_out, self.activation_out_deriv = self.init_activation(
@@ -143,9 +147,9 @@ class BPNN():
             outputs.append(self.forward_propagation(train_data[i]))
             accuracy, loss = self.back_propagation(train_label[i])
             pbar.set_description(
-                'epoch {}: acc:{:.3f}, loss:{:.3f}'.format(epoch+1, accuracy, loss))
+                'epoch {}: loss:{:.3f}'.format(epoch+1, loss))
             self.update_parameters()
-            time.sleep(0.001)
+            # time.sleep(0.001)
             losses.append(loss)
         return losses
 
@@ -188,6 +192,37 @@ class BPNN():
             self.weights = weights
             self.bias = bias
         
+    def save(self, filename: str):
+        '''
+        @description: 保存模型
+        @param filename: 文件名.h5
+        @return: 无
+        '''
+        h5file = h5py.File(filename,'w')
+        for i in range(len(self.weights)):
+            h5file.create_dataset('weights{}'.format(i), data=self.weights[i])
+            h5file.create_dataset('bias{}'.format(i), data=self.bias[i])
+        h5file.create_dataset('structure', data=self.structure)
+        dt = h5py.special_dtype(vlen=str)
+        ds = h5file.create_dataset('activation_hidden', shape=np.array([self.act_hidden_name]).shape, dtype=dt)
+        ds[:] = np.array([self.act_hidden_name])
+        ds = h5file.create_dataset('activation_out', shape=np.array([self.act_out_name]).shape, dtype=dt)
+        ds[:] = np.array([self.act_out_name])
+        h5file.close()
+    
+    @classmethod
+    def load(cls, filename:str):
+        '''
+        @description: 加载保存的模型
+        @param filename: 文件名.h5
+        @return: 无
+        '''
+        h5file = h5py.File(filename,'r')
+        model = cls(h5file['structure'][:], h5file['activation_hidden'][:][0], h5file['activation_out'][:][0])
+        for i in range(len(model.weights)):
+            model.weights[i] = h5file['weights{}'.format(i)][:]
+            model.bias[i] = h5file['bias{}'.format(i)][:]
+
     def cal_accuracy(self, actual_label, output):
         '''
         @description: 计算精确度
@@ -347,7 +382,7 @@ class BPNN_BGD():
             accuracy, loss = self.back_propagation(train_label[0])
             losses.append(loss)
             pbar.set_description(
-                'epoch {}: acc:{:.3f}, loss:{:.3f}'.format(epoch+1, accuracy, loss))
+                'epoch {}: loss:{:.3f}'.format(epoch+1, loss))
             for j in range(len(self.weights)):
                 self.partials.append(np.dot(self.deltas[j], self.layers_out[j]).T)
                 self.partials_b.append(self.deltas[j].T)     

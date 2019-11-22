@@ -3,7 +3,7 @@
 @Author: TJUZQC
 @Date: 2019-11-19 10:51:38
 @LastAuthor: TJUZQC
-@lastTime: 2019-11-20 23:39:30
+@lastTime: 2019-11-22 10:10:16
 @Description: None
 @FilePath: \ANN\train.py
 '''
@@ -14,22 +14,22 @@ from matplotlib import pyplot as plt
 
 def genrate_actual_label(x):
     noise = np.random.normal(0, 0.05, x.shape)
-    return 0.5 * np.sin(x) + 0.5 * np.cos(x) + noise
+    return np.sin(2 * x) + np.cos(x) + noise
 
 
-x = np.linspace(-np.pi, np.pi, 300)
+x = np.linspace(-np.pi, 2 * np.pi, 600)
 x = np.transpose([x])
 y = genrate_actual_label(x)
 train_x = np.array(x[0:-1])
 train_y = np.array(y[0:-1])
-x = np.linspace(-np.pi, np.pi, 300)
+x = np.linspace(-np.pi, 2 * np.pi, 600)
 x = np.transpose([x])
 y = genrate_actual_label(x)
 test_x = np.array(x[0:-1])
 test_y = np.array(y[0:-1])
-model = BPNN([1, 10, 10, 1], activation_hidden='tanh', activation_out='linear')
+model = BPNN([1, 20, 20, 20, 1], activation_hidden='tanh', activation_out='linear')
 # model.load_weights('BPNN.npy')
-losses = model.fit(train_x, train_y, epochs=4000, learning_rate=0.3)
+losses = model.fit(train_x, train_y, epochs=9999, learning_rate=0.025)
 plt.plot(losses)
 plt.show()
 model.save_weights('BPNN.npy')

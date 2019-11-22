@@ -3,7 +3,7 @@
 @Author: TJUZQC
 @Date: 2019-11-12 15:40:52
 @LastAuthor: TJUZQC
-@lastTime: 2019-11-20 23:38:42
+@lastTime: 2019-11-21 23:22:01
 @Description: None
 @FilePath: \ANN\Model.py
 '''
@@ -187,7 +187,7 @@ class BPNN():
         else:
             self.weights = weights
             self.bias = bias
-
+        
     def cal_accuracy(self, actual_label, output):
         '''
         @description: 计算精确度

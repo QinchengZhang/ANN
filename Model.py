@@ -3,7 +3,7 @@
 @Author: TJUZQC
 @Date: 2019-11-12 15:40:52
 @LastAuthor: TJUZQC
-@lastTime: 2019-11-22 19:16:37
+@lastTime: 2019-11-22 19:39:48
 @Description: None
 @FilePath: \ANN\Model.py
 '''
@@ -241,19 +241,6 @@ class BPNN():
         '''
         return 0.5 * pow(actual_label - output, 2)
 
-    def accuracy_calculation(self, actual_label, output):
-        '''
-        @description: 计算准确率
-        @param actual_label: 真实标签y
-        @param output: 前向传播得到的输出y`
-        @return: 准确率（百分制）
-        '''
-        correct_count = 0
-        for i in range(len(actual_label)):
-            if actual_label[i] == output[i]:
-                correct_count += 1
-        return correct_count / float(len(actual_label)) * 100.0
-
 class BPNN_BGD():
     def __init__(self, layers, activation_hidden='sigmoid', activation_out='linear'):
         '''
@@ -462,16 +449,3 @@ class BPNN_BGD():
         @return: 损失
         '''
         return 0.5 * pow(actual_label - output, 2)
-
-    def accuracy_calculation(self, actual_label, output):
-        '''
-        @description: 计算准确率
-        @param actual_label: 真实标签y
-        @param output: 前向传播得到的输出y`
-        @return: 准确率（百分制）
-        '''
-        correct_count = 0
-        for i in range(len(actual_label)):
-            if actual_label[i] == output[i]:
-                correct_count += 1
-        return correct_count / float(len(actual_label)) * 100.0

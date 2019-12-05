@@ -88,7 +88,7 @@ class BPNN():
         '''
         bias = []
         for i in range(1, len(layers)):
-            bias.append(np.random.normal(0, 0.25, (1, layers[i])))
+            bias.append(np.random.randn(1, layers[i]))
         return bias
 
     def forward_propagation(self, x):

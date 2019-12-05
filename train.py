@@ -42,7 +42,7 @@ model = BPNN(network_structure, activation_hidden=activation,
              activation_out='linear')
 # model.load_weights('BPNN.npy')
 epochs = 90000
-learning_rate = 0.03
+learning_rate = 0.003
 losses = model.fit(train_x, train_y, epochs=epochs,
                    learning_rate=learning_rate)
 plt.plot(losses)

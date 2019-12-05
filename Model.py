@@ -18,7 +18,7 @@ import h5py
 np.set_printoptions(precision=6)
 
 
-class BPNN():
+class ANN():
     def __init__(self, layers, activation_hidden='sigmoid', activation_out='linear'):
         '''
         @description: 构造函数

@@ -9,7 +9,7 @@
 '''
 import os
 import numpy as np
-from Model import BPNN
+from Model import ANN
 from matplotlib import pyplot as plt
 import time
 
@@ -38,7 +38,7 @@ test_x = np.array(x[0:-1])
 test_y = np.array(y[0:-1])
 network_structure = [1, 30, 30, 30, 1]
 activation = 'tanh'
-model = BPNN(network_structure, activation_hidden=activation,
+model = ANN(network_structure, activation_hidden=activation,
              activation_out='linear')
 # model.load_weights('BPNN.npy')
 epochs = 90000

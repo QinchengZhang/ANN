@@ -13,6 +13,6 @@ import Model
 
 # f = h5py.File('BPNN.h5','r')
 # print(f['activation_hidden'][:])
-model = Model.BPNN.load('BPNN.h5')
+model = Model.ANN.load('BPNN.h5')
 # model = Model.BPNN([1,4,1])
 # model.save('BPNN.h5')

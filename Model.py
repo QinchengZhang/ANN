@@ -71,9 +71,11 @@ class ANN():
         weights = []
         for i in range(1, len(layers)):
             if self.act_hidden_name == 'tanh':
-                weights_in_layer = np.random.randn(layers[i-1], layers[i]) * np.sqrt(1/layers[i-1])
-            elif self.act_hidden_name  == 'relu':
-                weights_in_layer = np.random.randn(layers[i-1], layers[i]) * np.sqrt(2/layers[i-1])
+                weights_in_layer = np.random.randn(
+                    layers[i-1], layers[i]) * np.sqrt(1/layers[i-1])
+            elif self.act_hidden_name == 'relu':
+                weights_in_layer = np.random.randn(
+                    layers[i-1], layers[i]) * np.sqrt(2/layers[i-1])
             else:
                 weights_in_layer = np.random.randn(layers[i-1], layers[i])
             # weights_in_layer = np.random.randn(layers[i-1], layers[i]) * np.sqrt(2/(layers[i-1] + layers[i]))
@@ -146,18 +148,19 @@ class ANN():
         @return: 无
         '''
         self.learning_rate = learning_rate
-        pbar = tqdm(range(epochs))
+        pbar = tqdm(total=epochs)
         losses = []
-        for epoch in pbar:
-            outputs = []
+        for epoch in range(epochs):
             i = np.random.randint(train_data.shape[0])
-            outputs.append(self.forward_propagation(train_data[i]))
+            self.forward_propagation(train_data[i])
             accuracy, loss = self.back_propagation(train_label[i])
-            pbar.set_description(
-                'epoch {}: loss:{:.3f}'.format(epoch+1, loss))
             self.update_parameters()
-            # time.sleep(0.001)
-            losses.append(loss)
+            if epoch % int(epochs/50) == 0:
+                pbar.set_description(
+                    'epoch {}: loss:{:.3f}'.format(epoch+1, loss))
+                pbar.update(int(epochs/50))
+                losses.append(loss)
+        pbar.close()
         return losses
 
     def predict(self, test_data):
@@ -198,34 +201,37 @@ class ANN():
         else:
             self.weights = weights
             self.bias = bias
-        
+
     def save(self, filename: str):
         '''
         @description: 保存模型
         @param filename: 文件名.h5
         @return: 无
         '''
-        h5file = h5py.File(filename,'w')
+        h5file = h5py.File(filename, 'w')
         for i in range(len(self.weights)):
             h5file.create_dataset('weights{}'.format(i), data=self.weights[i])
             h5file.create_dataset('bias{}'.format(i), data=self.bias[i])
         h5file.create_dataset('structure', data=self.structure)
         dt = h5py.special_dtype(vlen=str)
-        ds = h5file.create_dataset('activation_hidden', shape=np.array([self.act_hidden_name]).shape, dtype=dt)
+        ds = h5file.create_dataset('activation_hidden', shape=np.array(
+            [self.act_hidden_name]).shape, dtype=dt)
         ds[:] = np.array([self.act_hidden_name])
-        ds = h5file.create_dataset('activation_out', shape=np.array([self.act_out_name]).shape, dtype=dt)
+        ds = h5file.create_dataset('activation_out', shape=np.array(
+            [self.act_out_name]).shape, dtype=dt)
         ds[:] = np.array([self.act_out_name])
         h5file.close()
-    
+
     @classmethod
-    def load(cls, filename:str):
+    def load(cls, filename: str):
         '''
         @description: 加载保存的模型
         @param filename: 文件名.h5
         @return: 无
         '''
-        h5file = h5py.File(filename,'r')
-        model = cls(h5file['structure'][:], h5file['activation_hidden'][:][0], h5file['activation_out'][:][0])
+        h5file = h5py.File(filename, 'r')
+        model = cls(h5file['structure'][:], h5file['activation_hidden']
+                    [:][0], h5file['activation_out'][:][0])
         for i in range(len(model.weights)):
             model.weights[i] = h5file['weights{}'.format(i)][:]
             model.bias[i] = h5file['bias{}'.format(i)][:]

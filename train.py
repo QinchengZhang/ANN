@@ -26,16 +26,12 @@ def genrate_actual_label(x):
 
 sample_domain = (-2*np.pi, 2 * np.pi)
 sample_num = 1000
-x = np.linspace(sample_domain[0], sample_domain[1], sample_num)
-x = np.transpose([x])
-y = genrate_actual_label(x)
-train_x = np.array(x[0:-1])
-train_y = np.array(y[0:-1])
-x = np.linspace(sample_domain[0], sample_domain[1], sample_num)
-x = np.transpose([x])
-y = genrate_actual_label(x)
-test_x = np.array(x[0:-1])
-test_y = np.array(y[0:-1])
+train_x = np.linspace(sample_domain[0], sample_domain[1], sample_num)
+train_x = train_x.reshape(-1,1)
+train_y = genrate_actual_label(train_x)
+test_x = np.linspace(sample_domain[0], sample_domain[1], sample_num)
+test_x = test_x.reshape(-1,1)
+test_y = genrate_actual_label(test_x)
 network_structure = [1, 30, 30, 30, 1]
 activation = 'tanh'
 model = ANN(network_structure, activation_hidden=activation,

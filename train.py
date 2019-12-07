@@ -17,14 +17,14 @@ log = open('results.log', 'a+')
 
 a=2
 b=2
-c=2
-d=1
+c=3
+d=3
 def genrate_actual_label(x):
     noise = np.random.normal(0, 0.05, x.shape)
     return a * np.sin(b * x) + c * np.cos(d * x)
 
 
-sample_domain = (-2*np.pi, 2 * np.pi)
+sample_domain = (-2 * np.pi, 2 * np.pi)
 sample_num = 1000
 train_x = np.linspace(sample_domain[0], sample_domain[1], sample_num)
 train_x = train_x.reshape(-1,1)
@@ -37,8 +37,8 @@ activation = 'tanh'
 model = ANN(network_structure, activation_hidden=activation,
              activation_out='linear')
 # model.load_weights('BPNN.npy')
-epochs = 90000
-learning_rate = 0.003
+epochs = 200000
+learning_rate = 0.005
 losses = model.fit(train_x, train_y, epochs=epochs,
                    learning_rate=learning_rate)
 plt.plot(losses)

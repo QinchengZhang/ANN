@@ -1,6 +1,15 @@
 # coding=utf-8
 '''
 @Author: TJUZQC
+@Date: 2019-11-07 16:36:51
+@LastEditors: TJUZQC
+@LastEditTime: 2019-12-09 15:00:02
+@Description: None
+@FilePath: \ANN\BP_use_keras.py
+'''
+# coding=utf-8
+'''
+@Author: TJUZQC
 @since: 2019-11-07 16:36:51
 @LastAuthor: TJUZQC
 @lastTime: 2019-11-22 15:44:52
@@ -34,7 +43,7 @@ x = np.linspace(-np.pi, 2 * np.pi, 600)
 y = genrate_actual_label(x)
 test_x = np.array(x[0:-1])
 test_y = np.array(y[0:-1])
-model.fit(train_x, train_y, epochs=200, verbose=1, use_multiprocessing=True)
+model.fit(train_x, train_y, epochs=200, verbose=1, use_multiprocessing=True, batch_size=10)
 pred_y = model.predict(test_x)
 # print(pred_y)
 plt.scatter(test_x, test_y)

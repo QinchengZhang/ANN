@@ -1,11 +1,10 @@
 # coding=utf-8
 '''
 @Author: TJUZQC
-@since: 2019-11-07 16:47:24
-@LastAuthor: TJUZQC
-@lastTime: 2019-11-19 13:31:46
+@Date: 2019-11-07 16:47:24
+@LastEditors: TJUZQC
+@LastEditTime: 2019-12-10 16:53:27
 @Description: None
-@FilePath: \ANN\Activations.py
 '''
 import numpy as np
 
@@ -33,10 +32,9 @@ def ReLU(x):
 
 
 def ReLU_deriv(x):
-    relu = ReLU(x)
-    relu[relu <= 0] = 0
-    relu[relu > 0] = 1
-    return relu
+    x[x <= 0] = 0
+    x[x > 0] = 1
+    return x
 
 # 双曲函数
 
@@ -59,13 +57,3 @@ def linear_deriv(x):
     return np.ones_like(x)
 
 
-def SeLU(x):
-    alpha = 1.6732632423543772848170429916717
-    scale = 1.0507009873554804934193349852946
-    return scale * x if x > 0 else alpha * (np.exp(x) - 1.0) * scale
-
-
-def SeLU_deriv(x):
-    alpha = 1.6732632423543772848170429916717
-    scale = 1.0507009873554804934193349852946
-    return alpha * scale * np.exp(x) if x < 0 else scale

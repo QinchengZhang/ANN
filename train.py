@@ -33,12 +33,12 @@ test_x = np.linspace(sample_domain[0], sample_domain[1], sample_num)
 test_x = test_x.reshape(-1,1)
 test_y = genrate_actual_label(test_x)
 network_structure = [1, 30, 30, 30, 1]
-activation = 'tanh'
+activation = 'relu'
 model = ANN(network_structure, activation_hidden=activation,
              activation_out='linear')
 # model.load_weights('BPNN.npy')
 epochs = 500000
-learning_rate = 0.005
+learning_rate = 0.001
 losses = model.fit(train_x, train_y, epochs=epochs,
                    learning_rate=learning_rate)
 plt.plot(losses)

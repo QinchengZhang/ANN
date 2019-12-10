@@ -15,7 +15,7 @@ from matplotlib import pyplot as plt
 import random
 import h5py
 import prettytable as pt
-
+import Losses
 np.set_printoptions(precision=6)
 
 
@@ -41,16 +41,18 @@ class ANN():
         self.layers_in = []
         self.layers_out = []
         self.learning_rate = 0.1
+        self.loss = None
+        self.loss_deriv = None
         print('Network\'s architecture:')
         self.summary()
 
-    def init_activation(self, activation):
+    def init_activation(self, activation: str):
         '''
         @description: 激活函数初始化
         @param activation: 激活函数名,不区分大小写 
         @return: 激活函数, 激活函数的导函数
         '''
-        activations = ['sigmoid', 'relu', 'tanh', 'linear', 'selu']
+        activations = ['sigmoid', 'relu', 'tanh', 'linear']
         if activation.lower() == 'sigmoid':
             return Activations.sigmoid, Activations.sigmoid_deriv
         elif activation.lower() == 'relu':
@@ -59,8 +61,6 @@ class ANN():
             return Activations.tanh, Activations.tanh_deriv
         elif activation.lower() == 'linear':
             return Activations.linear, Activations.linear_deriv
-        elif activation.lower() == 'selu':
-            return Activations.SeLU, Activations.SeLU_deriv
         else:
             raise ValueError(
                 'this activate function does not supoorted, now supported activations are {}'.format(activations))
@@ -80,8 +80,9 @@ class ANN():
                 weights_in_layer = np.random.randn(
                     layers[i-1], layers[i]) * np.sqrt(2/layers[i-1])
             else:
-                weights_in_layer = np.random.randn(layers[i-1], layers[i])
-            # weights_in_layer = np.random.randn(layers[i-1], layers[i]) * np.sqrt(2/(layers[i-1] + layers[i]))
+                # weights_in_layer = np.random.randn(layers[i-1], layers[i])
+                weights_in_layer = np.random.randn(
+                    layers[i-1], layers[i]) * np.sqrt(2/(layers[i-1] + layers[i]))
             weights.append(weights_in_layer)
         return weights
 
@@ -95,6 +96,19 @@ class ANN():
         for i in range(1, len(layers)):
             bias.append(np.random.randn(1, layers[i]))
         return bias
+
+    def init_loss(self, loss: str):
+        '''
+        @description: 损失函数初始化
+        @param loss: 损失函数名,不区分大小写 
+        @return: 损失函数, 损失函数的导函数
+        '''
+        losses = ['mse']
+        if loss.lower() == 'mse':
+            return Losses.MSE, Losses.MSE_deriv
+        else:
+            raise ValueError(
+                'this loss function does not supoorted, now supported loss functions are {}'.format(losses))
 
     def forward_propagation(self, x):
         '''
@@ -120,15 +134,13 @@ class ANN():
         @return: 精确度, 损失
         '''
         self.deltas = [np.dot(self.activation_out_deriv(self.layers_out[-1]),
-                              -(actual_label - self.layers_out[-1]))]
+                              self.loss_deriv(actual_label, self.layers_out[-1]))]
         for i in range(len(self.weights) - 1, 0, -1):
             self.deltas.append(np.dot(np.diag(self.activation_hidden_deriv(self.layers_out[i])[
                                0]), np.dot(self.weights[i], self.deltas[-1])))
         self.deltas.reverse()
-        loss = self.cal_loss(actual_label[0], self.layers_out[-1][0][0])
-        accuracy = self.cal_accuracy(
-            actual_label[0], self.layers_out[-1][0][0])
-        return accuracy, loss
+        loss = self.loss(actual_label[0], self.layers_out[-1][0][0])
+        return loss
 
     def update_parameters(self):
         '''
@@ -141,27 +153,30 @@ class ANN():
 
             self.bias[i] -= self.learning_rate * self.deltas[i].T
 
-    def fit(self, train_data, train_label, learning_rate=0.1, epochs=10):
+    def fit(self, train_data, train_label, learning_rate=0.1, epochs=10, loss='MSE'):
         '''
         @description: 开始训练
         @param train_data: 训练集的输入x
         @param train_label: 训练集的真实值y
         @param learning_rate: 学习率
         @param epochs: 训练的次数
+        @param loss: 损失函数
         @return: 无
         '''
+        self.loss, self.loss_deriv = self.init_loss(loss)
         self.learning_rate = learning_rate
         pbar = tqdm(total=epochs)
         losses = []
         for epoch in range(epochs):
             i = np.random.randint(train_data.shape[0])
             self.forward_propagation(train_data[i])
-            accuracy, loss = self.back_propagation(train_label[i])
+            loss = self.back_propagation(train_label[i])
             self.update_parameters()
-            if epoch % int(epochs/(50 if epochs >= 50 else 1)) == 0:
+            update_per_epochs = int(epochs/(50 if epochs >= 50 else 1))
+            if epoch % update_per_epochs == 0:
                 pbar.set_description(
                     'epoch {}: loss:{:.3f}'.format(epoch+1, loss))
-                pbar.update(int(epochs/(50 if epochs >= 50 else 1)))
+                pbar.update(update_per_epochs)
                 losses.append(loss)
         pbar.close()
         return losses
@@ -245,27 +260,12 @@ class ANN():
         @return: 无
         '''
         tb = pt.PrettyTable()
-        tb.field_names = ['layer\'s name','number of nodes','activation name']
-        tb.add_row(['input layer','{}'.format(self.structure[0]),'None'])
+        tb.field_names = ['layer\'s name',
+                          'number of nodes', 'activation name']
+        tb.add_row(['input layer', '{}'.format(self.structure[0]), 'None'])
         for layer in range(1, len(self.structure)-1):
-            tb.add_row(['layer {}'.format(layer),'{}'.format(self.structure[layer]),'{}'.format(self.act_hidden_name)])
-        tb.add_row(['output layer','{}'.format(self.structure[-1]),'{}'.format(self.act_out_name)])
+            tb.add_row(['layer {}'.format(layer), '{}'.format(
+                self.structure[layer]), '{}'.format(self.act_hidden_name)])
+        tb.add_row(['output layer', '{}'.format(
+            self.structure[-1]), '{}'.format(self.act_out_name)])
         print(tb)
-
-    def cal_accuracy(self, actual_label, output):
-        '''
-        @description: 计算精确度
-        @param actual_label: 真实标签y
-        @param output: 前向传播得到的输出y`
-        @return: 精确度
-        '''
-        return 1.0 - abs(output - actual_label)/actual_label
-
-    def cal_loss(self, actual_label, output):
-        '''
-        @description: 计算损失
-        @param actual_label: 真实标签y
-        @param output: 前向传播得到的输出y`
-        @return: 损失
-        '''
-        return 0.5 * pow(actual_label - output, 2)

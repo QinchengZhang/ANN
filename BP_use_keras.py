@@ -3,16 +3,7 @@
 @Author: TJUZQC
 @Date: 2019-11-07 16:36:51
 @LastEditors: TJUZQC
-@LastEditTime: 2019-12-09 15:00:02
-@Description: None
-@FilePath: \ANN\BP_use_keras.py
-'''
-# coding=utf-8
-'''
-@Author: TJUZQC
-@since: 2019-11-07 16:36:51
-@LastAuthor: TJUZQC
-@lastTime: 2019-11-22 15:44:52
+@LastEditTime: 2019-12-10 16:50:00
 @Description: None
 @FilePath: \ANN\BP_use_keras.py
 '''

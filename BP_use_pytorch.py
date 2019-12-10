@@ -3,9 +3,9 @@
 @Author: TJUZQC
 @Date: 2019-12-09 12:56:14
 @LastEditors: TJUZQC
-@LastEditTime: 2019-12-09 17:14:44
+@LastEditTime: 2019-12-10 16:50:29
 @Description: None
-@FilePath: \ANN\BP_use_paddle.py
+@FilePath: \ANN\BP_use_pytorch.py
 '''
 import torch
 import numpy as np

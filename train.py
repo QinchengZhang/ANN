@@ -37,7 +37,7 @@ activation = 'tanh'
 model = ANN(network_structure, activation_hidden=activation,
              activation_out='linear')
 # model.load_weights('BPNN.npy')
-epochs = 200000
+epochs = 500000
 learning_rate = 0.005
 losses = model.fit(train_x, train_y, epochs=epochs,
                    learning_rate=learning_rate)

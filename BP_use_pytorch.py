@@ -3,7 +3,7 @@
 @Author: TJUZQC
 @Date: 2019-12-09 12:56:14
 @LastEditors: TJUZQC
-@LastEditTime: 2019-12-09 17:00:05
+@LastEditTime: 2019-12-09 17:14:44
 @Description: None
 @FilePath: \ANN\BP_use_paddle.py
 '''
@@ -52,7 +52,7 @@ test_dataset = torch.utils.data.TensorDataset(torch.from_numpy(test_x), torch.fr
 train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=32)
 test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=1)
 
-epochs = 900
+epochs = 10000
 model = ANN()
 optimizer = torch.optim.SGD(model.parameters(), lr=0.003)
 for epoch in range(epochs):

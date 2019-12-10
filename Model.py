@@ -14,6 +14,7 @@ import time
 from matplotlib import pyplot as plt
 import random
 import h5py
+import prettytable as pt
 
 np.set_printoptions(precision=6)
 
@@ -40,6 +41,8 @@ class ANN():
         self.layers_in = []
         self.layers_out = []
         self.learning_rate = 0.1
+        print('Network\'s architecture:')
+        self.summary()
 
     def init_activation(self, activation):
         '''
@@ -71,9 +74,11 @@ class ANN():
         weights = []
         for i in range(1, len(layers)):
             if self.act_hidden_name == 'tanh':
-                weights_in_layer = np.random.randn(layers[i-1], layers[i]) * np.sqrt(1/layers[i-1])
-            elif self.act_hidden_name  == 'relu':
-                weights_in_layer = np.random.randn(layers[i-1], layers[i]) * np.sqrt(2/layers[i-1])
+                weights_in_layer = np.random.randn(
+                    layers[i-1], layers[i]) * np.sqrt(1/layers[i-1])
+            elif self.act_hidden_name == 'relu':
+                weights_in_layer = np.random.randn(
+                    layers[i-1], layers[i]) * np.sqrt(2/layers[i-1])
             else:
                 weights_in_layer = np.random.randn(layers[i-1], layers[i])
             # weights_in_layer = np.random.randn(layers[i-1], layers[i]) * np.sqrt(2/(layers[i-1] + layers[i]))
@@ -153,9 +158,10 @@ class ANN():
             self.forward_propagation(train_data[i])
             accuracy, loss = self.back_propagation(train_label[i])
             self.update_parameters()
-            if epoch % int(epochs/(50 if epochs>=50 else 1)) == 0:
-                pbar.set_description('epoch {}: loss:{:.3f}'.format(epoch+1, loss))
-                pbar.update(int(epochs/(50 if epochs>=50 else 1)))
+            if epoch % int(epochs/(50 if epochs >= 50 else 1)) == 0:
+                pbar.set_description(
+                    'epoch {}: loss:{:.3f}'.format(epoch+1, loss))
+                pbar.update(int(epochs/(50 if epochs >= 50 else 1)))
                 losses.append(loss)
         pbar.close()
         return losses
@@ -198,37 +204,53 @@ class ANN():
         else:
             self.weights = weights
             self.bias = bias
-        
+
     def save(self, filename: str):
         '''
         @description: 保存模型
         @param filename: 文件名.h5
         @return: 无
         '''
-        h5file = h5py.File(filename,'w')
+        h5file = h5py.File(filename, 'w')
         for i in range(len(self.weights)):
             h5file.create_dataset('weights{}'.format(i), data=self.weights[i])
             h5file.create_dataset('bias{}'.format(i), data=self.bias[i])
         h5file.create_dataset('structure', data=self.structure)
         dt = h5py.special_dtype(vlen=str)
-        ds = h5file.create_dataset('activation_hidden', shape=np.array([self.act_hidden_name]).shape, dtype=dt)
+        ds = h5file.create_dataset('activation_hidden', shape=np.array(
+            [self.act_hidden_name]).shape, dtype=dt)
         ds[:] = np.array([self.act_hidden_name])
-        ds = h5file.create_dataset('activation_out', shape=np.array([self.act_out_name]).shape, dtype=dt)
+        ds = h5file.create_dataset('activation_out', shape=np.array(
+            [self.act_out_name]).shape, dtype=dt)
         ds[:] = np.array([self.act_out_name])
         h5file.close()
-    
+
     @classmethod
-    def load(cls, filename:str):
+    def load(cls, filename: str):
         '''
         @description: 加载保存的模型
         @param filename: 文件名.h5
         @return: 无
         '''
-        h5file = h5py.File(filename,'r')
-        model = cls(h5file['structure'][:], h5file['activation_hidden'][:][0], h5file['activation_out'][:][0])
+        h5file = h5py.File(filename, 'r')
+        model = cls(h5file['structure'][:], h5file['activation_hidden']
+                    [:][0], h5file['activation_out'][:][0])
         for i in range(len(model.weights)):
             model.weights[i] = h5file['weights{}'.format(i)][:]
             model.bias[i] = h5file['bias{}'.format(i)][:]
+
+    def summary(self):
+        '''
+        @description: 将网络结构打印出来
+        @return: 无
+        '''
+        tb = pt.PrettyTable()
+        tb.field_names = ['layer\'s name','number of nodes','activation name']
+        tb.add_row(['input layer','{}'.format(self.structure[0]),'None'])
+        for layer in range(1, len(self.structure)-1):
+            tb.add_row(['layer {}'.format(layer),'{}'.format(self.structure[layer]),'{}'.format(self.act_hidden_name)])
+        tb.add_row(['output layer','{}'.format(self.structure[-1]),'{}'.format(self.act_out_name)])
+        print(tb)
 
     def cal_accuracy(self, actual_label, output):
         '''

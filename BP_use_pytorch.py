@@ -3,7 +3,7 @@
 @Author: TJUZQC
 @Date: 2019-12-09 12:56:14
 @LastEditors: TJUZQC
-@LastEditTime: 2019-12-10 16:50:29
+@LastEditTime: 2019-12-10 18:37:19
 @Description: None
 @FilePath: \ANN\BP_use_pytorch.py
 '''
@@ -58,7 +58,6 @@ optimizer = torch.optim.SGD(model.parameters(), lr=0.003)
 for epoch in range(epochs):
     model.train()
     for batch_idx,(x,y) in enumerate(train_loader):
-        y = y/2
         optimizer.zero_grad()
         out = model(x)
         loss = F.mse_loss(out, y)
@@ -73,7 +72,7 @@ with torch.no_grad():
     model.eval()
     out = []
     for batch_idx, (x,y) in enumerate(test_loader):
-        out.append(model(x)*2)
+        out.append(model(x))
 plt.scatter(test_x, test_y, color='red', label='GT')
 plt.plot(test_x, out, label='predict')
 plt.legend()

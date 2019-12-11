@@ -264,7 +264,7 @@ class ANN():
                           'number of nodes', 'activation name']
         tb.add_row(['input layer', '{}'.format(self.structure[0]), 'None'])
         for layer in range(1, len(self.structure)-1):
-            tb.add_row(['layer {}'.format(layer), '{}'.format(
+            tb.add_row(['hidden layer {}'.format(layer), '{}'.format(
                 self.structure[layer]), '{}'.format(self.act_hidden_name)])
         tb.add_row(['output layer', '{}'.format(
             self.structure[-1]), '{}'.format(self.act_out_name)])

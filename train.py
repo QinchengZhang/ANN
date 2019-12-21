@@ -1,4 +1,4 @@
-# coding=utf-8
+# -*- coding: utf-8 -*-
 '''
 @Author: TJUZQC
 @Date: 2019-11-19 10:51:38
